@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  This template describes the resources to be deployed for the Todo app
+  
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  ListTodosFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/list-todos
+      Handler: list-todos.lambdaHandler
+      Runtime: nodejs12.x
+      Events:
+        ListTodos:
+          Type: Api
+          Properties:
+            Path: /list
+            Method: get
+  UpdateTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/update-todo
+      Handler: update-todo.lambdaHandler
+      Runtime: nodejs12.x
+      Events:
+        UpdateTodo:
+          Type: Api
+          Properties:
+            Path: /update/{todoId}
+            Method: PUT
+            RequestParameters:
+              method.request.path.todoId:
+                Required: true
+  CreateTodoFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/update-todo
+      Handler: update-todo.lambdaHandler
+      Runtime: nodejs12.x
+      Events:
+        UpdateTodo:
+          Type: Api
+          Properties:
+            Path: /
+            Method: POST
+
+Outputs:
+  TodoApi:
+    Description: "API Gateway endpoint URL for Prod stage for the todos functions"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
