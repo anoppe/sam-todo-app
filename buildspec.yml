@@ -1,0 +1,16 @@
+version: 0.2
+
+phases:
+  build:
+    commands:
+      - echo "Starting SAM packaging `date` in `pwd` using bucket $BUILD_OUTPUT_BUCKET"
+      - aws cloudformation package --template-file template.yaml --s3-bucket cloudformation-codebuild  --output-template-file packaged.yaml
+
+  post_build:
+    commands:
+      - echo "SAM packaging completed on `date`"
+
+artifacts:
+  files:
+    - packaged.yaml
+  discard-paths: yes
