@@ -4,6 +4,8 @@ Description: >
   This template describes the resources to be deployed for the Todo app
   
 Globals:
+  Api:
+    OpenApiVersion: 3.0.1 # This option is required to prevent a stage called 'Stage' to be created automatically
   Function:
     Timeout: 3
 
