@@ -1,22 +1,35 @@
+'use strict';
 
-/**
- *
- * Event doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
- * @param {Object} event - API Gateway Lambda Proxy Input Format
- *
- * Context doc: https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html 
- * @param {Object} context
- *
- * Return doc: https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
- * @returns {Object} object - API Gateway Lambda Proxy Output Format
- * 
- */
+const AWS = require('aws-sdk');
+const shortid = require('shortid');
+const DB = new AWS.DynamoDB.DocumentClient();
+
+const TABLE_NAME = process.env.TABLE_NAME;
+
 exports.lambdaHandler = async (event, context) => {
 
-    console.log(event);
+    let requestBody = JSON.parse(event.body);
+    let itemId = shortid.generate();
+    requestBody.id = itemId;
+
+    if (requestBody.done === null) {
+        requestBody.done = false;
+    }
+
+    const params = {
+        TableName: TABLE_NAME,
+        Item: requestBody
+    };
+
+    await DB
+        .put(params)
+        .promise();
 
     return {
         statusCode: 201,
+        headers: {
+            "x-created-item-id": itemId
+        }
     };
 
 };

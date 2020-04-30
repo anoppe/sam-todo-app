@@ -1,12 +1,13 @@
 {
-  "name": "hello_world",
+  "name": "update-todos",
   "version": "1.0.0",
-  "description": "hello world sample for NodeJS",
-  "main": "app.js",
-  "repository": "https://github.com/awslabs/aws-sam-cli/tree/develop/samcli/local/init/templates/cookiecutter-aws-sam-hello-nodejs",
-  "author": "SAM CLI",
+  "description": "Update lambda function",
+  "main": "udpate-todo.js",
+  "repository": "https://github.com/anoppe/sam-todo-app",
+  "author": "anoppe",
   "license": "MIT",
   "dependencies": {
+    "aws-sdk": "^2.667.0",
     "axios": "^0.18.0"
   },
   "scripts": {
