@@ -9,6 +9,11 @@ Globals:
   Function:
     Timeout: 3
 
+Parameters:
+  TableName:
+    Type: String
+    Default: 'my-todos'
+
 Resources:
   ListTodosFunction:
     Type: AWS::Serverless::Function
@@ -16,6 +21,12 @@ Resources:
       CodeUri: functions/list-todos
       Handler: list-todos.lambdaHandler
       Runtime: nodejs12.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Select [1, !Split ['/', !GetAtt DynamoTodosTable.Arn]]
+      Environment:
+        Variables:
+          TABLE_NAME: !Select [1, !Split ['/', !GetAtt DynamoTodosTable.Arn]]
       Events:
         ListTodos:
           Type: Api
@@ -28,6 +39,12 @@ Resources:
       CodeUri: functions/update-todo
       Handler: update-todo.lambdaHandler
       Runtime: nodejs12.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Select [1, !Split ['/', !GetAtt DynamoTodosTable.Arn]]
+      Environment:
+        Variables:
+          TABLE_NAME: !Select [1, !Split ['/', !GetAtt DynamoTodosTable.Arn]]
       Events:
         UpdateTodo:
           Type: Api
@@ -40,15 +57,33 @@ Resources:
   CreateTodoFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: functions/update-todo
-      Handler: update-todo.lambdaHandler
+      CodeUri: functions/create-todo
+      Handler: create-todo.lambdaHandler
       Runtime: nodejs12.x
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Select [1, !Split ['/', !GetAtt DynamoTodosTable.Arn]]
+      Environment:
+        Variables:
+          TABLE_NAME: !Select [1, !Split ['/', !GetAtt DynamoTodosTable.Arn]]
       Events:
         UpdateTodo:
           Type: Api
           Properties:
             Path: /
             Method: POST
+  DynamoTodosTable:
+    Type: AWS::Serverless::SimpleTable # if you want to define a more complex table, use AWS::DynamoDB::Table
+    TableName: !Ref TableName
+    PrimaryKey:
+      Name: todo-id
+      Type: String
+    BillingMode: PROVISIONED
+    ProvisionedThroughput:
+      ReadCapacityUnit: 1
+      WriteCapacityUnits: 1
+    Tags:
+      AppType: Serverless
 
 Outputs:
   TodoApi:
